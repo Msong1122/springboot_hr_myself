@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.msong.hrserver_myself.mapper.EmployeeMapper">
+
+    <resultMap id="employeeMap" type="com.msong.hrserver_myself.bean.EmployeeInfo">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="gender" property="gender"/>
+        <result column="birthday" property="birthday"/>
+        <result column="idCard" property="idCard"/>
+        <result column="wedlock" property="wedlock"/>
+        <result column="nationId" property="nationId"/>
+        <result column="nativePlace" property="nativePlace"/>
+        <result column="politicId" property="politicId"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="address" property="address"/>
+        <result column="departmentId" property="departmentId"/>
+        <result column="jobLevelId" property="jobLevelId"/>
+        <result column="posId" property="posId"/>
+        <result column="engageForm" property="engageForm"/>
+        <result column="tiptopDegree" property="tiptopDegree"/>
+        <result column="specialty" property="specialty"/>
+        <result column="school" property="school"/>
+        <result column="beginDate" property="beginDate"/>
+        <result column="workState" property="workState"/>
+        <result column="workID" property="workID"/>
+        <result column="contractTerm" property="contractTerm"/>
+        <result column="conversionTime" property="conversionTime"/>
+        <result column="notWorkDate" property="notWorkDate"/>
+        <result column="beginContract" property="beginContract"/>
+        <result column="endContract" property="endContract"/>
+        <result column="workAge" property="workAge"/>
+        <association property="department" javaType="com.msong.hrserver_myself.bean.Department">
+            <id column="did" property="id"/>
+            <result column="depName" property="name"/>
+        </association>
+        <association property="joblevel" javaType="com.msong.hrserver_myself.bean.Joblevel">
+            <id column="jid" property="id"/>
+            <result column="jobname" property="name"/>
+            <result column="joblevel" property="titleLevel"/>
+        </association>
+        <association property="position" javaType="com.msong.hrserver_myself.bean.Position">
+            <id column="posId" property="id"/>
+            <result column="posname" property="name"/>
+        </association>
+        <association property="politicsstatus" javaType="com.msong.hrserver_myself.bean.Politicsstatus">
+            <id column="politId" property="id"/>
+            <result column="politname" property="name"/>
+        </association>
+    </resultMap>
+    <resultMap id="hrMap" type="com.msong.hrserver_myself.bean.HrInfo">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"/>
+        <result column="phone" property="phone"/>
+        <result column="telephone" property="telephone"/>
+        <result column="enabled" property="enabled"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="userface" property="userface"/>
+        <result column="remark" property="remark"/>
+
+
+        <collection property="roles" ofType="com.msong.hrserver_myself.bean.Role">
+            <id column="roleId" property="id"/>
+            <result column="roleName" property="name"/>
+            <result column="nameZh" property="nameZh"/>
+        </collection>
+    </resultMap>
+    <resultMap id="hrInfoMap" type="com.msong.hrserver_myself.bean.HrInfo">
+        <association property="hr" javaType="com.msong.hrserver_myself.bean.Hr">
+            <id column="id" property="id"/>
+            <result column="name" property="name"/>
+            <result column="phone" property="phone"/>
+            <result column="telephone" property="telephone"/>
+            <result column="enabled" property="enabled"/>
+            <result column="username" property="username"/>
+            <result column="password" property="password"/>
+            <result column="userface" property="userface"/>
+            <result column="remark" property="remark"/>
+        </association>
+        <collection property="roles" ofType="com.msong.hrserver_myself.bean.Role">
+            <id column="id" property="id"/>
+            <result column="roleName" property="name"/>
+            <result column="nameZh" property="nameZh"/>
+        </collection>
+    </resultMap>
+    <resultMap id="hrInfoMap02" type="com.msong.hrserver_myself.bean.HrInfo02" extends="hrMap">
+
+    </resultMap>
+
+    <select id="selectAllEmployee" resultType="com.msong.hrserver_myself.bean.Employee">
+        select * from employee
+    </select>
+
+    <select id="selectEmployeeById" parameterType="int" resultMap="employeeMap">
+        SELECT
+        emp.*, n. NAME nationName,
+        dep. NAME depName,
+        dep.id did,
+        job.name jobname,job.titleLevel joblevel,job.id jid,
+        pos.name posname, pos.id posId,
+        polit.name politname,polit.id politId
+        FROM
+            employee emp
+        LEFT JOIN nation n ON emp.nationId = n.id
+        LEFT JOIN department dep ON emp.departmentId = dep.id
+        LEFT JOIN joblevel job on emp.jobLevelId=job.id
+        LEFT JOIN position pos on emp.posId=pos.id
+        LEFT JOIN politicsstatus polit on emp.politicId=polit.id
+        where  emp.id = #{id}
+
+    </select>
+
+    <select id="selectEmployeeByPage" parameterType="int" resultMap="employeeMap">
+        SELECT
+        emp.*, n. NAME nationName,
+        dep. NAME depName,
+        dep.id did,
+        job.name jobname,job.titleLevel joblevel,job.id jid,
+        pos.name posname, pos.id posId,
+        polit.name politname,polit.id politId
+        FROM
+            employee emp
+        LEFT JOIN nation n ON emp.nationId = n.id
+        LEFT JOIN department dep ON emp.departmentId = dep.id
+        LEFT JOIN joblevel job on emp.jobLevelId=job.id
+        LEFT JOIN `position` pos on emp.posId=pos.id
+        LEFT JOIN politicsstatus polit on emp.politicId=polit.id
+        limit #{page},10
+    </select>
+
+    <update id="updateEmployee" parameterType="com.msong.hrserver_myself.bean.EmployeeInfo">
+        update employee
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="gender != null">
+                gender=#{gender},
+            </if>
+            <if test="birthday != null">
+                birthday=#{birthday},
+            </if>
+            <if test="idCard != null">
+                idCard=#{idCard},
+            </if>
+            <if test="wedlock != null">
+                wedlock=#{wedlock},
+            </if>
+            <if test="nationId != null">
+                nationId=#{nationId},
+            </if>
+            <if test="nativePlace != null">
+                nativePlace=#{nativePlace},
+            </if>
+            <if test="politicId != null">
+                politicId=#{politicId},
+            </if>
+            <if test="email != null">
+                email=#{email},
+            </if>
+            <if test="phone != null">
+                phone=#{phone},
+            </if>
+            <if test="address != null">
+                address=#{address},
+            </if>
+            <if test="departmentId != null">
+                departmentId=#{departmentId},
+            </if>
+            <if test="jobLevelId != null">
+                jobLevelId=#{jobLevelId},
+            </if>
+            <if test="posId != null">
+                posId=#{posId},
+            </if>
+            <if test="engageForm != null">
+                engageForm=#{engageForm},
+            </if>
+            <if test="tiptopDegree != null">
+                tiptopDegree=#{tiptopDegree},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="getEmpTotal" resultType="int">
+        select COUNT(1) from employee
+    </select>
+    <delete id="deleteById" parameterType="int">
+        delete  from employee where id = #{id}
+    </delete>
+
+
+    <select id="getHrinfo" resultMap="hrInfoMap">
+        select hr.`name`,hr.address,hr.username,role.`name` roleName,role.nameZh from hr INNER JOIN hr_role on hr.id=hr_role.hrid INNER JOIN role on role.id=hr_role.rid
+    </select>
+    <select id="getHrinfo02" resultMap="hrInfoMap02">
+        SELECT
+            hr.id,
+            hr.`name`,
+            hr.address,
+            hr.username,
+            role.id roleId,
+            role.`name` roleName,
+            role.nameZh
+        FROM
+            hr
+        INNER JOIN hr_role ON hr.id = hr_role.hrid
+        INNER JOIN role ON role.id = hr_role.rid
+    </select>
+
+    <!--mysql timestamp,datetime,date 三个类型测试-->
+    <select id="testTime" resultType="com.msong.hrserver_myself.bean.Time">
+        select * from time
+    </select>
+
+</mapper>
